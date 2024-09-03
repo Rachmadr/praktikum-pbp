@@ -1,0 +1,176 @@
+<!-- 
+    Nama File   : js_validation_24060122120014.js 
+    Deskripsi   : form validation untuk tambah data produk
+    Pembuat     : Rachmad Rifa'i / 24060122120014
+    Tanggal     : 04 September 2024
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Tambah Data Produk</title>
+    <style>
+        input[type="text"], input[type="number"], textarea {
+            width: 50%;
+            padding: 4px;
+        }
+        td {
+            padding-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Form Tambah Data Produk</h1>
+    
+    <form name="TambahProduk" action="process.php" onsubmit="return validateForm()" method="post">
+        <table>
+            <tr>
+                <td><label for="NamaProduk">Nama Produk</label></td>
+                <td><input type="text" name="fnamaproduk" required="required" minlength="5" maxlength="30"></td>
+            </tr>
+            <tr>
+                <td><label for="Deskripsi">Deskripsi</label></td>
+                <td><textarea name="deskripsi" required="required" minlength="5" maxlength="100"></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="Kategori">Kategori</label></td>
+                <td>
+                    <select id="kategori" name="kategori" required="required" onchange="updateSubKategori()">
+                        <option value="" disabled selected>--Pilih Kategori--</option>
+                        <option value="Baju">Baju</option>
+                        <option value="Elektronik">Elektronik</option>
+                        <option value="Alat Tulis">Alat Tulis</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="SubKategori">Sub Kategori</label></td>
+                <td>
+                    <select id="subkategori" name="subkategori" required="required">
+                        <option value="" disabled selected>--Pilih Sub Kategori--</option>
+                    </select> <br>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="HargaSatuan">Harga Satuan</label></td>
+                <td><input type="number" name="hargasatuan" required="required"> </td>
+            </tr>
+            <tr>
+                <td><label for="Grosir">Grosir</label></td>
+                <td>
+                    <input type="radio" id="grosirYa" name="Grosir" value="GrosirYa" onclick="toggleHargaGrosir()">
+                    <label for="GrosirYa">Ya</label> <br>
+                    <input type="radio" id="grosirTidak" name="Grosir" value="GrosirTidak" onclick="toggleHargaGrosir()">
+                    <label for="grosirTidak">Tidak</label>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="HargaGrosir">Harga Grosir</label></td>
+                <td><input type="number" id="hargaGrosir" name="hargagrosir" required="required"> <br></td>
+            </tr>
+            <tr>
+                <td><label for="jasa">Jasa Kirim</label></td>
+                <td>
+                    <input type="checkbox" id="jasakirim1" name="jasakirim" value="JNE">
+                    <label for="jasakirim1">JNE</label> <br>
+                    <input type="checkbox" id="jasakirim2" name="jasakirim" value="TIKI">
+                    <label for="jasakirim2">TIKI</label> <br>
+                    <input type="checkbox" id="jasakirim3" name="jasakirim" value="SiCepat">
+                    <label for="jasakirim3">SiCepat</label> <br>
+                    <input type="checkbox" id="jasakirim4" name="jasakirim" value="NinjaExpress">
+                    <label for="jasakirim4">Ninja Express</label> <br>
+                    <input type="checkbox" id="jasakirim5" name="jasakirim" value="Wahana">
+                    <label for="jasakirim5">Wahana</label>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="captcha">Captcha</label></td>
+                <td>
+                    <input type="text" id="captcha1" name="captcha" disabled>
+                    <input type="text" id="captcha" name="captcha" required pattern="[A-Za-z]{5}"> <br>
+                </td>
+            </tr>
+        </table>
+        
+        <br>
+        <button type="submit">Submit</button>
+        <button type="reset">Reset</button>
+    </form>
+
+    <script>
+        let generatedCaptcha = '';
+
+        function updateSubKategori() {
+            var kategori = document.getElementById("kategori").value;
+            var subkategori = document.getElementById("subkategori");
+            subkategori.innerHTML = '<option value="" disabled selected>--Pilih Sub Kategori--</option>';
+
+            if (kategori === "Baju") {
+                var options = ["Baju Pria", "Baju Wanita", "Baju Anak"];
+            } else if (kategori === "Elektronik") {
+                var options = ["Mesin Cuci", "Kulkas", "AC"];
+            } else if (kategori === "Alat Tulis") {
+                var options = ["Kertas", "Map", "Pulpen"];
+            }
+
+            options.forEach(function(option) {
+                var newOption = document.createElement("option");
+                newOption.value = option;
+                newOption.text = option;
+                subkategori.add(newOption);
+            });
+        }
+
+        function toggleHargaGrosir() {
+            var hargaGrosirInput = document.getElementById("hargaGrosir");
+            var isGrosirYa = document.getElementById("grosirYa").checked;
+
+            if (isGrosirYa) {
+                hargaGrosirInput.disabled = false;
+                hargaGrosirInput.required = true;
+            } else {
+                hargaGrosirInput.disabled = true;
+                hargaGrosirInput.required = false;
+                hargaGrosirInput.value = '';
+            }
+        }
+
+        function validateJasaKirim() {
+            var checkboxes = document.querySelectorAll('input[name="jasakirim"]:checked');
+            return checkboxes.length >= 3;
+        }
+
+        function validateCaptcha() {
+            var userCaptcha = document.getElementById("captcha").value;
+            return userCaptcha === generatedCaptcha;
+        }
+
+        function validateForm() {
+            if (!validateJasaKirim()) {
+                alert("Pilih minimal 3 jasa kirim.");
+                return false;
+            }
+
+            if (!validateCaptcha()) {
+                alert("Captcha tidak sesuai. Silakan coba lagi.");
+                return false;
+            }
+
+            return true;
+        }
+
+        const generateCaptcha = () => {
+            generatedCaptcha = '';
+            for (let i = 0; i < 5; i++) {
+                generatedCaptcha += String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+            }
+            document.getElementById('captcha1').placeholder = generatedCaptcha;
+        }
+
+        generateCaptcha();
+        toggleHargaGrosir();
+    </script>
+</body>
+</html>
